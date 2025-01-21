@@ -1,6 +1,6 @@
 /* General Styles */
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
     margin: 0;
     padding: 0;
     background-color: #fef3e2;
@@ -9,14 +9,9 @@ body {
     align-items: center;
     height: 100vh;
     overflow: hidden;
-}
-
-/* Add Samsung Sans font */
-@font-face {
-    font-family: 'Samsung Sans';
-    src: url('https://fonts.cdnfonts.com/s/19717/SamsungSans.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
+    background-image: url('https://your-image-url.com'); /* Replace with your image URL */
+    background-size: cover;
+    background-position: center;
 }
 
 /* Chat Container */
@@ -26,7 +21,7 @@ body {
     height: 80vh;
     display: flex;
     flex-direction: column;
-    background-color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.8); /* Slight transparency to show background */
     border: 2px solid #ffc2a1;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -37,7 +32,7 @@ header {
     background: linear-gradient(135deg, #ff9f80, #ffc2a1);
     color: white;
     padding: 15px 20px;
-    font-family: 'Samsung Sans', sans-serif; /* Using Samsung Sans font */
+    font-family: 'Comic Sans MS', cursive, sans-serif;
     text-align: center;
     font-size: 24px;
     font-weight: bold;
@@ -55,7 +50,7 @@ header {
 .message {
     display: flex;
     flex-direction: column;
-    max-width: 70%;
+    max-width: auto;
     word-wrap: break-word;
     margin-bottom: 10px;
     padding: 10px;
@@ -69,6 +64,7 @@ header {
     align-self: flex-start; /* Align to the left */
     background-color: #ff9f80;
     color: white;
+    max-width: 80%; /* Adjust width dynamically */
 }
 
 /* Received Messages */
@@ -76,6 +72,7 @@ header {
     align-self: flex-end; /* Align to the right */
     background-color: #ffccbb;
     color: black;
+    max-width: 80%; /* Adjust width dynamically */
 }
 
 /* Timestamp Styling */
