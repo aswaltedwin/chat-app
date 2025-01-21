@@ -2,7 +2,7 @@ const socket = io();
 
 // Prompt the user for their name
 const userName = prompt("Enter your name:") || "Anonymous";
-socket.emit('userJoined', userName);
+socket.emit('new-user', userName);
 
 const chatBox = document.getElementById('chat-box');
 const messageInput = document.getElementById('message-input');
@@ -39,11 +39,11 @@ function sendMessage() {
 
     const time = getFormattedTime();
 
-    // Display the message locally
+    // Display the message locally (for the sender)
     addMessage({ userName: "You", message, time, type: 'user' });
 
     // Emit the message to the server
-    socket.emit('chatMessage', { userName, message, time });
+    socket.emit('chat-message', { message, time });
     messageInput.value = '';
 }
 
@@ -56,16 +56,17 @@ messageInput.addEventListener('keypress', (e) => {
 sendButton.addEventListener('click', sendMessage);
 
 // Listen for messages from the server (received messages)
-socket.on('chatMessage', ({ userName, message, time }) => {
+socket.on('chat-message', ({ userName, message, time }) => {
+    // Display the message for other users (not the sender)
     addMessage({ userName, message, time, type: 'others' });
 });
 
 // Listen for user join notifications
-socket.on('userJoined', (name) => {
+socket.on('user-connected', (name) => {
     addNotification(`${name} joined the chat`);
 });
 
 // Listen for user leave notifications
-socket.on('userLeft', (name) => {
+socket.on('user-disconnected', (name) => {
     addNotification(`${name} left the chat`);
 });
