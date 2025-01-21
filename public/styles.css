@@ -1,0 +1,157 @@
+/* General Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #fef3e2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Add Samsung Sans font */
+@font-face {
+    font-family: 'Samsung Sans';
+    src: url('https://fonts.cdnfonts.com/s/19717/SamsungSans.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Chat Container */
+#chat-container {
+    width: 100%;
+    max-width: 600px; /* Desktop: WhatsApp/Instagram-like width */
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    border: 2px solid #ffc2a1;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+header {
+    background: linear-gradient(135deg, #ff9f80, #ffc2a1);
+    color: white;
+    padding: 15px 20px;
+    font-family: 'Samsung Sans', sans-serif; /* Using Samsung Sans font */
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 10px 10px 0 0;
+}
+
+/* Chat Box */
+#chat-box {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+/* Message Bubble */
+.message {
+    display: flex;
+    flex-direction: column;
+    max-width: 70%;
+    word-wrap: break-word;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* Sent Messages (User) */
+.message.user {
+    align-self: flex-start; /* Align to the left */
+    background-color: #ff9f80;
+    color: white;
+}
+
+/* Received Messages */
+.message.others {
+    align-self: flex-end; /* Align to the right */
+    background-color: #ffccbb;
+    color: black;
+}
+
+/* Timestamp Styling */
+.message span {
+    font-size: 10px;
+    margin-top: 5px;
+    align-self: flex-end;
+    opacity: 0.7;
+}
+
+/* Notification Messages */
+.notification {
+    text-align: center;
+    font-style: italic;
+    color: #444;
+    font-size: 14px;
+    margin: 10px 0;
+}
+
+/* Chat Input */
+#chat-input {
+    display: flex;
+    padding: 10px;
+    border-top: 2px solid #ffc2a1;
+}
+
+#message-input {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid #ffc2a1;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+#send-button {
+    margin-left: 10px;
+    padding: 10px 15px;
+    background-color: #ff9f80;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+#send-button:hover {
+    background-color: #ff8263;
+}
+
+/* Scrollbar Styling */
+#chat-box::-webkit-scrollbar {
+    width: 8px;
+}
+
+#chat-box::-webkit-scrollbar-thumb {
+    background: #ffc2a1;
+    border-radius: 5px;
+}
+
+#chat-box::-webkit-scrollbar-track {
+    background: #fef3e2;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #chat-container {
+        width: 90%; /* Full width on smaller devices */
+    }
+
+    #message-input {
+        font-size: 14px;
+    }
+
+    #send-button {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+}
