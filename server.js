@@ -5,7 +5,12 @@ const path = require("path");
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: "*",  // This allows connections from any domain. For added security, you can specify your frontend URL here.
+    methods: ["GET", "POST"]
+  }
+});
 
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, "public")));
@@ -24,10 +29,10 @@ io.on("connection", (socket) => {
 
   // When a message is sent
   socket.on("chat-message", (data) => {
-    socket.broadcast.emit("chat-message", {
+    io.emit("chat-message", {
       message: data.message,
       username: users[socket.id],
-      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     });
   });
 
