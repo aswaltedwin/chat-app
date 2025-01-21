@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*",  // This allows connections from any domain. For added security, you can specify your frontend URL here.
+    origin: "*",  // Allows connections from any domain. You can replace '*' with your frontend URL in production.
     methods: ["GET", "POST"]
   }
 });
