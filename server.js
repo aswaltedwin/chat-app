@@ -33,13 +33,14 @@ io.on("connection", (socket) => {
 
   // When a message is sent
   socket.on("chat-message", (data) => {
-    const username = users[socket.id];  // Fetch the username of the sender
+    const username = users[socket.id]; // Fetch the username of the sender
     if (username) {
       // Emit the message to all clients EXCEPT the sender
       socket.broadcast.emit("chat-message", {
         message: data.message,
         username: username, // Send the correct username here
-        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        // Emit time in UTC format
+        time: new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" }),
       });
     }
   });

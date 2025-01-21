@@ -42,9 +42,8 @@ function sendMessage() {
   // Display the message locally (for the sender)
   addMessage({ userName: "You", message, time, type: "user" });
 
-  // Emit the message to the server (without displaying it for the sender again)
+  // Emit the message to the server
   socket.emit("chat-message", { message, time });
-
   messageInput.value = "";
 }
 
@@ -58,8 +57,10 @@ sendButton.addEventListener("click", sendMessage);
 
 // Listen for messages from the server (received messages)
 socket.on("chat-message", ({ username, message, time }) => {
+  // Convert UTC time to local time
+  const localTime = new Date(time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   // Display the message for other users (not the sender)
-  addMessage({ userName: username, message, time, type: "others" });
+  addMessage({ userName: username, message, time: localTime, type: "others" });
 });
 
 // Listen for user join notifications
