@@ -17,7 +17,7 @@ body {
 /* Chat Container */
 #chat-container {
     width: 100%;
-    max-width: 600px; /* Desktop: WhatsApp/Instagram-like width */
+    max-width: fit-content; /* Desktop: WhatsApp/Instagram-like width */
     height: 80vh;
     display: flex;
     flex-direction: column;
