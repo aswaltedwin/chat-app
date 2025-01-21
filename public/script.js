@@ -26,18 +26,12 @@ function addNotification(notification) {
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// Format time (remove seconds)
-function getFormattedTime() {
-  const now = new Date();
-  return now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
-
 // Send a message
 function sendMessage() {
   const message = messageInput.value.trim();
   if (!message) return;
 
-  const time = getFormattedTime();
+  const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
   // Display the message locally (for the sender)
   addMessage({ userName: "You", message, time, type: "user" });
@@ -57,10 +51,8 @@ sendButton.addEventListener("click", sendMessage);
 
 // Listen for messages from the server (received messages)
 socket.on("chat-message", ({ username, message, time }) => {
-  // Convert UTC time to local time
-  const localTime = new Date(time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   // Display the message for other users (not the sender)
-  addMessage({ userName: username, message, time: localTime, type: "others" });
+  addMessage({ userName: username, message, time, type: "others" });
 });
 
 // Listen for user join notifications

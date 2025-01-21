@@ -35,12 +35,16 @@ io.on("connection", (socket) => {
   socket.on("chat-message", (data) => {
     const username = users[socket.id]; // Fetch the username of the sender
     if (username) {
+      // Get current time in IST (UTC +5:30)
+      const ISTDate = new Date();
+      const ISTTime = new Date(ISTDate.getTime() + (5.5 * 60 * 60 * 1000)); // UTC +5:30
+      const timeInIST = ISTTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
       // Emit the message to all clients EXCEPT the sender
       socket.broadcast.emit("chat-message", {
         message: data.message,
         username: username, // Send the correct username here
-        // Emit time in UTC format
-        time: new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" }),
+        time: timeInIST, // Send the time in IST
       });
     }
   });
