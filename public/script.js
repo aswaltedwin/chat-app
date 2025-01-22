@@ -1,8 +1,89 @@
 const socket = io();
 
+// Generate RSA Key Pair for Encryption
+async function generateKeyPair() {
+  const keyPair = await window.crypto.subtle.generateKeyPair(
+    {
+      name: "RSA-OAEP",
+      modulusLength: 2048,
+      publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+      hash: "SHA-256",
+    },
+    true,
+    ["encrypt", "decrypt"]
+  );
+
+  const publicKey = await window.crypto.subtle.exportKey("spki", keyPair.publicKey);
+  const privateKey = await window.crypto.subtle.exportKey("pkcs8", keyPair.privateKey);
+
+  return {
+    publicKey: btoa(String.fromCharCode(...new Uint8Array(publicKey))),
+    privateKey: btoa(String.fromCharCode(...new Uint8Array(privateKey))),
+  };
+}
+
+// Initialize and Store Keys Locally
+async function initializeKeys() {
+  const { publicKey, privateKey } = await generateKeyPair();
+
+  sessionStorage.setItem("publicKey", publicKey);
+  sessionStorage.setItem("privateKey", privateKey);
+
+  // Emit public key to server
+  socket.emit("share-public-key", { publicKey });
+}
+
+// Encrypt Message Using Recipient's Public Key
+async function encryptMessage(message, recipientPublicKey) {
+  const publicKey = await window.crypto.subtle.importKey(
+    "spki",
+    Uint8Array.from(atob(recipientPublicKey), (c) => c.charCodeAt(0)),
+    {
+      name: "RSA-OAEP",
+      hash: "SHA-256",
+    },
+    true,
+    ["encrypt"]
+  );
+
+  const encryptedMessage = await window.crypto.subtle.encrypt(
+    {
+      name: "RSA-OAEP",
+    },
+    publicKey,
+    new TextEncoder().encode(message)
+  );
+
+  return btoa(String.fromCharCode(...new Uint8Array(encryptedMessage)));
+}
+
+// Decrypt Message Using Own Private Key
+async function decryptMessage(encryptedMessage) {
+  const privateKey = await window.crypto.subtle.importKey(
+    "pkcs8",
+    Uint8Array.from(atob(sessionStorage.getItem("privateKey")), (c) => c.charCodeAt(0)),
+    {
+      name: "RSA-OAEP",
+      hash: "SHA-256",
+    },
+    true,
+    ["decrypt"]
+  );
+
+  const decryptedMessage = await window.crypto.subtle.decrypt(
+    {
+      name: "RSA-OAEP",
+    },
+    privateKey,
+    Uint8Array.from(atob(encryptedMessage), (c) => c.charCodeAt(0))
+  );
+
+  return new TextDecoder().decode(decryptedMessage);
+}
+
 // Prompt the user for their name
 const userName = prompt("Enter your name:") || "Anonymous";
-socket.emit("new-user", userName);
+initializeKeys().then(() => socket.emit("new-user", userName));
 
 const chatBox = document.getElementById("chat-box");
 const messageInput = document.getElementById("message-input");
@@ -27,17 +108,19 @@ function addNotification(notification) {
 }
 
 // Send a message
-function sendMessage() {
+async function sendMessage() {
   const message = messageInput.value.trim();
   if (!message) return;
 
-  const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const recipientPublicKey = sessionStorage.getItem("recipientPublicKey"); // Assume server shares recipient's public key
+  const encryptedMessage = await encryptMessage(message, recipientPublicKey);
 
-  // Display the message locally (for the sender)
-  addMessage({ userName: "You", message, time, type: "user" });
+  // Emit the encrypted message to the server
+  socket.emit("chat-message", { encryptedMessage });
 
-  // Emit the message to the server
-  socket.emit("chat-message", { message, time });
+  // Display the message locally for the sender
+  addMessage({ userName: "You", message, time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }), type: "user" });
+
   messageInput.value = "";
 }
 
@@ -47,11 +130,11 @@ messageInput.addEventListener("keypress", (e) => {
 });
 
 // Handle the send button
-sendButton.addEventListener("click", sendMessage);
+sendButton.addEventListener("click", sendMessage());
 
 // Listen for messages from the server (received messages)
-socket.on("chat-message", ({ username, message, time }) => {
-  // Display the message for other users (not the sender)
+socket.on("chat-message", async ({ username, encryptedMessage, time }) => {
+  const message = await decryptMessage(encryptedMessage);
   addMessage({ userName: username, message, time, type: "others" });
 });
 
@@ -63,4 +146,9 @@ socket.on("user-connected", (name) => {
 // Listen for user leave notifications
 socket.on("user-disconnected", (name) => {
   addNotification(`${name} left the chat`);
+});
+
+// Store recipient public key when shared by the server
+socket.on("recipient-public-key", (data) => {
+  sessionStorage.setItem("recipientPublicKey", data.publicKey);
 });
